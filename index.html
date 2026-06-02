@@ -457,6 +457,10 @@
 
   function renderQuestion() {
     const item = quiz[current];
+    const userAns = answers[current];        // selected index or null
+    const isAnswered = userAns !== null;     // this question already answered?
+    const correctIdx = item.correctIndex;
+
     $('qSubject').textContent = item.subject;
     $('qText').textContent = (current + 1) + '. ' + item.q;
     $('qCounter').textContent = `Savol ${current + 1} / ${quiz.length}`;
@@ -464,22 +468,65 @@
     $('answeredCount').textContent = `${answered} belgilangan`;
     $('progressBar').style.width = ((current + 1) / quiz.length * 100) + '%';
 
-    $('optionsWrap').innerHTML = item.options.map((opt, i) => {
-      const sel = answers[current] === i;
-      return `<button data-opt="${i}" class="opt group w-full text-left flex items-start gap-3 p-4 rounded-2xl border-2 transition
-        ${sel ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/15 opt-selected' : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800/50 hover:border-indigo-300 dark:hover:border-indigo-500/50'}">
-        <span class="shrink-0 h-8 w-8 grid place-items-center rounded-lg font-bold text-sm
-          ${sel ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/30'}">${LETTERS[i]}</span>
+    const checkIcon = '<svg class="h-5 w-5 shrink-0 mt-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
+    const xIcon = '<svg class="h-5 w-5 shrink-0 mt-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+
+    const optsHTML = item.options.map((opt, i) => {
+      const isSel = userAns === i;
+      const isCorrectOpt = i === correctIdx;
+      let border, badge, tail = '';
+
+      if (!isAnswered) {
+        border = 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800/50 hover:border-indigo-300 dark:hover:border-indigo-500/50 cursor-pointer';
+        badge = 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-500/30';
+      } else if (isCorrectOpt) {
+        // always reveal the correct option in green
+        border = 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/15';
+        badge = 'bg-emerald-600 text-white';
+        tail = `<span class="ml-auto flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-sm">${checkIcon}To'g'ri</span>`;
+      } else if (isSel) {
+        // chosen but wrong
+        border = 'border-rose-500 bg-rose-50 dark:bg-rose-500/15';
+        badge = 'bg-rose-600 text-white';
+        tail = `<span class="ml-auto flex items-center gap-1 text-rose-600 dark:text-rose-400 font-bold text-sm">${xIcon}Xato</span>`;
+      } else {
+        border = 'border-slate-200 dark:border-slate-700 bg-white/40 dark:bg-slate-800/30 opacity-60';
+        badge = 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300';
+      }
+
+      return `<button data-opt="${i}" ${isAnswered ? 'disabled' : ''} class="opt group w-full text-left flex items-start gap-3 p-4 rounded-2xl border-2 transition ${border}">
+        <span class="shrink-0 h-8 w-8 grid place-items-center rounded-lg font-bold text-sm ${badge}">${LETTERS[i]}</span>
         <span class="flex-1 pt-1 leading-relaxed">${escapeHtml(opt)}</span>
+        ${tail}
       </button>`;
     }).join('');
-    $('optionsWrap').querySelectorAll('.opt').forEach((b) => {
-      b.addEventListener('click', () => {
-        answers[current] = +b.dataset.opt;
-        renderQuestion();
-        renderPalette();
+
+    // feedback banner under the 4 options
+    let feedbackHTML = '';
+    if (isAnswered) {
+      if (userAns === correctIdx) {
+        feedbackHTML = `<div class="mt-1 flex items-center gap-2 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-500/15 border border-emerald-300 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-300 font-semibold animate-pop">
+          <span class="text-xl">✅</span> To'g'ri javob! Ofarin.</div>`;
+      } else {
+        feedbackHTML = `<div class="mt-1 p-4 rounded-2xl bg-rose-50 dark:bg-rose-500/15 border border-rose-300 dark:border-rose-500/40 animate-pop">
+          <p class="flex items-center gap-2 text-rose-700 dark:text-rose-300 font-semibold mb-1"><span class="text-xl">❌</span> Xato javob</p>
+          <p class="text-sm text-emerald-700 dark:text-emerald-300 pl-1">To'g'ri javob: <b>${LETTERS[correctIdx]})</b> ${escapeHtml(item.options[correctIdx])}</p>
+        </div>`;
+      }
+    }
+
+    $('optionsWrap').innerHTML = optsHTML + feedbackHTML;
+
+    // only allow selecting while not yet answered (locks after first choice)
+    if (!isAnswered) {
+      $('optionsWrap').querySelectorAll('.opt').forEach((b) => {
+        b.addEventListener('click', () => {
+          answers[current] = +b.dataset.opt;
+          renderQuestion();
+          renderPalette();
+        });
       });
-    });
+    }
 
     $('prevBtn').disabled = current === 0;
     $('nextBtn').classList.toggle('hide', current === quiz.length - 1);
