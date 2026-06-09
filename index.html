@@ -46,19 +46,177 @@
 <style>
   html { scroll-behavior: smooth; }
   body { font-family: 'Inter', system-ui, sans-serif; }
-  .glass { backdrop-filter: blur(14px); }
-  .scrollbar-thin::-webkit-scrollbar { width: 8px; height: 8px; }
-  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(120,120,140,.4); border-radius: 8px; }
+
+  /* ===== Apple Liquid Glass ===== */
+  .liquid-glass {
+    backdrop-filter: blur(40px) saturate(1.8) brightness(1.05);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8) brightness(1.05);
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.45) 0%,
+      rgba(255,255,255,0.15) 40%,
+      rgba(255,255,255,0.25) 100%);
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.06),
+      0 1px 2px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.7),
+      inset 0 -1px 0 rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.35) 0%,
+      rgba(255,255,255,0.0) 100%);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  .dark .liquid-glass {
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.08) 0%,
+      rgba(255,255,255,0.03) 40%,
+      rgba(255,255,255,0.06) 100%);
+    border-color: rgba(255,255,255,0.12);
+    box-shadow:
+      0 8px 32px rgba(0,0,0,0.3),
+      0 1px 2px rgba(0,0,0,0.2),
+      inset 0 1px 0 rgba(255,255,255,0.1),
+      inset 0 -1px 0 rgba(255,255,255,0.03);
+  }
+  .dark .liquid-glass::before {
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.08) 0%,
+      rgba(255,255,255,0.0) 100%);
+  }
+
+  /* Lighter variant for nested cards */
+  .liquid-glass-light {
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.55) 0%,
+      rgba(255,255,255,0.25) 100%);
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow:
+      0 4px 16px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+    position: relative;
+    overflow: hidden;
+  }
+  .dark .liquid-glass-light {
+    background: linear-gradient(135deg,
+      rgba(255,255,255,0.06) 0%,
+      rgba(255,255,255,0.02) 100%);
+    border-color: rgba(255,255,255,0.08);
+    box-shadow:
+      0 4px 16px rgba(0,0,0,0.25),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  /* Specular highlight shimmer on hover */
+  .liquid-glass-hover {
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .liquid-glass-hover:hover {
+    box-shadow:
+      0 12px 40px rgba(99,102,241,0.12),
+      0 2px 4px rgba(0,0,0,0.04),
+      inset 0 1px 0 rgba(255,255,255,0.9),
+      inset 0 -1px 0 rgba(255,255,255,0.15);
+    transform: translateY(-1px);
+  }
+  .dark .liquid-glass-hover:hover {
+    box-shadow:
+      0 12px 40px rgba(99,102,241,0.15),
+      0 2px 4px rgba(0,0,0,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.15),
+      inset 0 -1px 0 rgba(255,255,255,0.05);
+  }
+
+  /* Glass button style */
+  .liquid-btn {
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    background: linear-gradient(135deg,
+      rgba(99,102,241,0.85) 0%,
+      rgba(124,58,237,0.85) 100%);
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow:
+      0 4px 20px rgba(99,102,241,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.3);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .liquid-btn:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+      0 8px 30px rgba(99,102,241,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .liquid-btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Legacy glass fallback */
+  .glass { backdrop-filter: blur(40px) saturate(1.8); -webkit-backdrop-filter: blur(40px) saturate(1.8); }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(120,120,140,.3); border-radius: 8px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(120,120,140,.5); }
   .hide { display: none !important; }
   .opt-selected { box-shadow: 0 0 0 2px rgba(99,102,241,.9) inset; }
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+  /* SVG Liquid distortion filter (for background) */
+  .liquid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .liquid-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: orbFloat 12s ease-in-out infinite alternate;
+  }
+  .dark .liquid-orb { opacity: 0.25; }
+  @keyframes orbFloat {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 15px) scale(0.95); }
+    100% { transform: translate(10px, -10px) scale(1.02); }
+  }
 </style>
+
+<!-- SVG filter for liquid glass refraction -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="liquidFilter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" seed="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
 </head>
 
-<body class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-violet-100 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 dark:text-slate-100 transition-colors duration-500">
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 via-slate-50 to-violet-50 text-slate-800 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 dark:text-slate-100 transition-colors duration-500">
+
+<!-- Liquid Glass animated background orbs -->
+<div class="liquid-bg">
+  <div class="liquid-orb" style="width:500px;height:500px;top:-10%;left:-5%;background:radial-gradient(circle,rgba(99,102,241,0.4),transparent);animation-delay:0s;"></div>
+  <div class="liquid-orb" style="width:400px;height:400px;top:50%;right:-8%;background:radial-gradient(circle,rgba(167,139,250,0.35),transparent);animation-delay:-4s;animation-duration:15s;"></div>
+  <div class="liquid-orb" style="width:350px;height:350px;bottom:-5%;left:30%;background:radial-gradient(circle,rgba(236,72,153,0.2),transparent);animation-delay:-8s;animation-duration:18s;"></div>
+  <div class="liquid-orb" style="width:300px;height:300px;top:20%;left:50%;background:radial-gradient(circle,rgba(34,211,238,0.2),transparent);animation-delay:-6s;animation-duration:14s;"></div>
+</div>
 
 <!-- ===================== HEADER ===================== -->
-<header class="sticky top-0 z-40 glass bg-white/70 dark:bg-slate-900/70 border-b border-slate-200/60 dark:border-slate-700/60">
+<header class="sticky top-0 z-40 liquid-glass" style="border-radius:0;border-left:0;border-right:0;border-top:0;">
   <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
     <div class="flex items-center gap-3 min-w-0">
       <div class="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 grid place-items-center text-white font-black shadow-lg shadow-indigo-500/30">SR</div>
@@ -84,7 +242,7 @@
   <section id="screen-start" class="animate-fadeUp">
     <div class="grid lg:grid-cols-5 gap-6">
       <!-- Hero -->
-      <div class="lg:col-span-3 rounded-3xl p-7 sm:p-10 bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 shadow-xl shadow-indigo-500/5">
+      <div class="lg:col-span-3 rounded-3xl p-7 sm:p-10 liquid-glass liquid-glass-hover">
         <div class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-3 py-1.5 rounded-full mb-5">
           <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> Akkreditatsiyaga tayyorgarlik
         </div>
@@ -109,7 +267,7 @@
           </div>
         </div>
 
-        <button id="startBtn" class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-bold text-lg shadow-xl shadow-indigo-500/30 hover:shadow-2xl hover:-translate-y-0.5 active:translate-y-0 transition">
+        <button id="startBtn" class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-2xl liquid-btn text-white font-bold text-lg">
           Testni boshlash
           <svg class="h-5 w-5 group-hover:translate-x-1 transition" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
@@ -124,14 +282,14 @@
 
       <!-- Leaderboard preview + subjects -->
       <div class="lg:col-span-2 space-y-6">
-        <div class="rounded-3xl p-6 bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 shadow-xl shadow-indigo-500/5">
+        <div class="rounded-3xl p-6 liquid-glass liquid-glass-hover">
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-extrabold text-lg flex items-center gap-2">🏆 Reyting</h3>
             <button id="clearBoardBtn" class="text-xs text-slate-400 hover:text-rose-500 transition">Tozalash</button>
           </div>
           <div id="startLeaderboard" class="space-y-2 max-h-72 overflow-auto scrollbar-thin pr-1"></div>
         </div>
-        <div class="rounded-3xl p-6 bg-white/80 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60 shadow-xl shadow-indigo-500/5">
+        <div class="rounded-3xl p-6 liquid-glass liquid-glass-hover">
           <h3 class="font-extrabold text-lg mb-4">📚 Fanlar</h3>
           <div id="subjectList" class="space-y-2 text-sm"></div>
         </div>
@@ -155,14 +313,14 @@
               <div id="progressBar" class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 transition-all duration-300" style="width:0%"></div>
             </div>
           </div>
-          <div class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-white/80 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 font-mono font-bold text-sm">
+          <div class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl liquid-glass-light font-mono font-bold text-sm">
             <svg class="h-4 w-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
             <span id="timer">00:00</span>
           </div>
         </div>
 
         <!-- question card -->
-        <div id="questionCard" class="rounded-3xl p-6 sm:p-8 bg-white/85 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/60 shadow-xl shadow-indigo-500/5">
+        <div id="questionCard" class="rounded-3xl p-6 sm:p-8 liquid-glass">
           <div class="flex items-center gap-2 mb-4">
             <span id="qSubject" class="text-xs font-bold px-3 py-1 rounded-full bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-300"></span>
           </div>
@@ -172,13 +330,13 @@
 
         <!-- nav buttons -->
         <div class="flex items-center justify-between gap-3 mt-6">
-          <button id="prevBtn" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition">
+          <button id="prevBtn" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold liquid-glass-light liquid-glass-hover disabled:opacity-40 disabled:cursor-not-allowed">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg> Oldingi
           </button>
-          <button id="finishBtn" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5 transition">
+          <button id="finishBtn" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white liquid-btn" style="background:linear-gradient(135deg,rgba(16,185,129,0.85),rgba(13,148,136,0.85));">
             Testni yakunlash
           </button>
-          <button id="nextBtn" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/20 hover:-translate-y-0.5 transition">
+          <button id="nextBtn" class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-white liquid-btn">
             Keyingi <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
@@ -186,7 +344,7 @@
 
       <!-- Palette sidebar -->
       <div class="lg:col-span-1 order-1 lg:order-2">
-        <div class="rounded-3xl p-5 bg-white/85 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/60 shadow-xl shadow-indigo-500/5 lg:sticky lg:top-24">
+        <div class="rounded-3xl p-5 liquid-glass lg:sticky lg:top-24">
           <h3 class="font-bold text-sm mb-3 text-slate-600 dark:text-slate-300">Savollar xaritasi</h3>
           <div id="palette" class="grid grid-cols-8 lg:grid-cols-6 gap-1.5 mb-4 max-h-64 lg:max-h-[22rem] overflow-auto scrollbar-thin"></div>
           <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
@@ -216,7 +374,7 @@
     <div class="grid lg:grid-cols-3 gap-6">
       <!-- charts -->
       <div class="lg:col-span-2 space-y-6">
-        <div class="rounded-3xl p-6 bg-white/85 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/60 shadow-xl shadow-indigo-500/5">
+        <div class="rounded-3xl p-6 liquid-glass">
           <h3 class="font-extrabold text-lg mb-4">📊 Umumiy natija</h3>
           <div class="grid sm:grid-cols-2 gap-6 items-center">
             <div class="relative mx-auto" style="max-width:240px"><canvas id="doughnutChart"></canvas></div>
@@ -224,12 +382,12 @@
           </div>
         </div>
 
-        <div class="rounded-3xl p-6 bg-white/85 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/60 shadow-xl shadow-indigo-500/5">
+        <div class="rounded-3xl p-6 liquid-glass">
           <h3 class="font-extrabold text-lg mb-4">📈 Fanlar bo'yicha tahlil</h3>
           <div style="height:280px"><canvas id="barChart"></canvas></div>
         </div>
 
-        <div class="rounded-3xl p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-500/10 dark:to-orange-500/10 border border-amber-200/70 dark:border-amber-500/20 shadow-xl">
+        <div class="rounded-3xl p-6 liquid-glass" style="background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(249,115,22,0.06));">
           <h3 class="font-extrabold text-lg mb-3 flex items-center gap-2">💡 Tavsiya</h3>
           <div id="recommendation" class="text-sm sm:text-base leading-relaxed text-slate-700 dark:text-slate-200 space-y-2"></div>
         </div>
@@ -237,7 +395,7 @@
 
       <!-- leaderboard + actions -->
       <div class="lg:col-span-1 space-y-6">
-        <div class="rounded-3xl p-6 bg-white/85 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/60 shadow-xl shadow-indigo-500/5">
+        <div class="rounded-3xl p-6 liquid-glass">
           <div class="flex items-center justify-between mb-1">
             <h3 class="font-extrabold text-lg">🏆 Reyting</h3>
             <span id="rankBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300"></span>
@@ -246,14 +404,14 @@
           <div id="resultLeaderboard" class="space-y-2 max-h-80 overflow-auto scrollbar-thin pr-1"></div>
         </div>
         <div class="space-y-3">
-          <button id="reviewBtn" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition">📝 Javoblarni ko'rish</button>
-          <button id="retakeBtn" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-500/20 hover:-translate-y-0.5 transition">🔄 Yangi test (tasodifiy)</button>
+          <button id="reviewBtn" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold liquid-glass-light liquid-glass-hover">📝 Javoblarni ko'rish</button>
+          <button id="retakeBtn" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-bold text-white liquid-btn">🔄 Yangi test (tasodifiy)</button>
         </div>
       </div>
     </div>
 
     <!-- review list -->
-    <div id="reviewSection" class="hide mt-6 rounded-3xl p-6 bg-white/85 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/60 shadow-xl">
+    <div id="reviewSection" class="hide mt-6 rounded-3xl p-6 liquid-glass">
       <h3 class="font-extrabold text-lg mb-4">📝 Javoblar tahlili</h3>
       <div id="reviewList" class="space-y-4"></div>
     </div>
@@ -261,7 +419,7 @@
 </main>
 
 <!-- ===================== FOOTER ===================== -->
-<footer class="mt-10 border-t border-slate-200/70 dark:border-slate-700/60 bg-white/60 dark:bg-slate-900/60 glass">
+<footer class="mt-10 liquid-glass" style="border-radius:0;border-left:0;border-right:0;border-bottom:0;">
   <div class="max-w-6xl mx-auto px-4 py-7 text-center">
     <div class="flex items-center justify-center gap-2 mb-2">
       <div class="h-7 w-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 grid place-items-center text-white font-black text-xs">IS</div>
@@ -272,27 +430,27 @@
 </footer>
 
 <!-- ===================== NAME MODAL ===================== -->
-<div id="nameModal" class="hide fixed inset-0 z-50 grid place-items-center p-4 bg-slate-900/60 backdrop-blur-sm">
-  <div class="w-full max-w-md rounded-3xl p-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl animate-pop">
+<div id="nameModal" class="hide fixed inset-0 z-50 grid place-items-center p-4 bg-slate-900/40 backdrop-blur-md">
+  <div class="w-full max-w-md rounded-3xl p-7 liquid-glass shadow-2xl animate-pop">
     <div class="text-5xl text-center mb-3">✍️</div>
     <h3 class="text-xl font-black text-center mb-1">Ismingizni kiriting</h3>
     <p class="text-sm text-slate-500 dark:text-slate-400 text-center mb-5">Natijangiz reytingga qo'shiladi va siz boshqalar bilan solishtirilasiz.</p>
     <input id="nameInput" type="text" maxlength="40" placeholder="Masalan: Iftikhor Rahimov"
       class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2" />
     <p id="nameError" class="text-xs text-rose-500 mb-3 h-4"></p>
-    <button id="nameSubmit" class="w-full px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg hover:-translate-y-0.5 transition">Natijani ko'rish</button>
+    <button id="nameSubmit" class="w-full px-6 py-3 rounded-xl font-bold text-white liquid-btn">Natijani ko'rish</button>
   </div>
 </div>
 
 <!-- ===================== CONFIRM MODAL ===================== -->
-<div id="confirmModal" class="hide fixed inset-0 z-50 grid place-items-center p-4 bg-slate-900/60 backdrop-blur-sm">
-  <div class="w-full max-w-md rounded-3xl p-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl animate-pop">
+<div id="confirmModal" class="hide fixed inset-0 z-50 grid place-items-center p-4 bg-slate-900/40 backdrop-blur-md">
+  <div class="w-full max-w-md rounded-3xl p-7 liquid-glass shadow-2xl animate-pop">
     <div class="text-5xl text-center mb-3">🤔</div>
     <h3 class="text-xl font-black text-center mb-1">Testni yakunlaysizmi?</h3>
     <p id="confirmText" class="text-sm text-slate-500 dark:text-slate-400 text-center mb-5"></p>
     <div class="flex gap-3">
-      <button id="confirmCancel" class="flex-1 px-5 py-3 rounded-xl font-semibold bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition">Davom etish</button>
-      <button id="confirmOk" class="flex-1 px-5 py-3 rounded-xl font-bold bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg transition">Ha, yakunlash</button>
+      <button id="confirmCancel" class="flex-1 px-5 py-3 rounded-xl font-semibold liquid-glass-light liquid-glass-hover">Davom etish</button>
+      <button id="confirmOk" class="flex-1 px-5 py-3 rounded-xl font-bold text-white liquid-btn" style="background:linear-gradient(135deg,rgba(16,185,129,0.85),rgba(13,148,136,0.85));">Ha, yakunlash</button>
     </div>
   </div>
 </div>
